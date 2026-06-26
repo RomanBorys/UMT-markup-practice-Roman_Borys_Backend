@@ -10,7 +10,8 @@
   },
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "seed:bouquets": "node src/scripts/importBouquets.js --reset"
   },
   "dependencies": {
     "cors": "^2.8.6",
