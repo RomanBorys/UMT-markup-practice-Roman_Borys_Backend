@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Flora Bouquets API",
-    "version": "1.0.0",
-    "description": "REST API for managing the Flora bouquet collection."
+    "title": "Flora API",
+    "version": "1.1.0",
+    "description": "REST API for managing the Flora bouquet collection and customer feedbacks."
   },
   "servers": [
     {
@@ -15,6 +15,10 @@
     {
       "name": "Bouquets",
       "description": "Bouquet collection operations"
+    },
+    {
+      "name": "Feedbacks",
+      "description": "Customer feedback operations"
     }
   ],
   "paths": {
@@ -283,6 +287,70 @@
           }
         }
       }
+    },
+    "/api/feedbacks": {
+      "get": {
+        "tags": [
+          "Feedbacks"
+        ],
+        "summary": "Get all feedbacks",
+        "description": "Returns all customer feedbacks stored in the database.",
+        "operationId": "getFeedbacks",
+        "responses": {
+          "200": {
+            "description": "Feedback collection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Feedback"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Feedbacks"
+        ],
+        "summary": "Create customer feedback",
+        "description": "Creates and stores new customer feedback in the PostgreSQL database.",
+        "operationId": "createFeedback",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Feedback created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Feedback"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -308,13 +376,13 @@
               "$ref": "#/components/schemas/Error"
             },
             "example": {
-              "message": "price must be greater than or equal to 0"
+              "message": "Invalid request data"
             }
           }
         }
       },
       "NotFound": {
-        "description": "Bouquet was not found",
+        "description": "Resource was not found",
         "content": {
           "application/json": {
             "schema": {
@@ -476,7 +544,7 @@
           "photoURL": {
             "type": "string",
             "format": "uri",
-            "example": "http://localhost:3000/photos/550e8400-e29b-41d4-a716-446655440000.jpg"
+            "example": "https://umt-markup-practice-roman-borys-backend.onrender.com/photos/550e8400-e29b-41d4-a716-446655440000.jpg"
           }
         }
       },
@@ -490,6 +558,57 @@
           "message": {
             "type": "string",
             "example": "Bouquet deleted"
+          }
+        }
+      },
+      "Feedback": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "author",
+          "text"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "readOnly": true,
+            "example": 1
+          },
+          "author": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "example": "Emma T."
+          },
+          "text": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "example": "Flora made my anniversary unforgettable with their beautiful arrangement!"
+          }
+        }
+      },
+      "FeedbackCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "author",
+          "text"
+        ],
+        "properties": {
+          "author": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "example": "Daniel R."
+          },
+          "text": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000,
+            "example": "Absolutely stunning bouquet! It arrived right on time."
           }
         }
       },
@@ -509,3 +628,4 @@
     }
   }
 }
+
