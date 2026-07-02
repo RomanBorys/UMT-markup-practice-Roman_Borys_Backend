@@ -2,8 +2,8 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Flora API",
-    "version": "1.1.0",
-    "description": "REST API for managing the Flora bouquet collection and customer feedbacks."
+    "version": "1.2.0",
+    "description": "REST API for managing the Flora bouquet collection, customer feedbacks, and orders."
   },
   "servers": [
     {
@@ -19,6 +19,10 @@
     {
       "name": "Feedbacks",
       "description": "Customer feedback operations"
+    },
+    {
+      "name": "Orders",
+      "description": "Customer order operations"
     }
   ],
   "paths": {
@@ -351,6 +355,57 @@
           }
         }
       }
+    },
+    "/api/orders": {
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Create an order",
+        "description": "Creates a customer order. The total price is calculated by the server using the current bouquet price.",
+        "operationId": "createOrder",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "description": "Bouquet was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "message": "Bouquet not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -612,6 +667,116 @@
           }
         }
       },
+      "Order": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "bouquetId",
+          "customerName",
+          "phone",
+          "address",
+          "message",
+          "quantity",
+          "totalPrice"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "readOnly": true,
+            "example": 1
+          },
+          "bouquetId": {
+            "type": "integer",
+            "minimum": 1,
+            "example": 1
+          },
+          "customerName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "example": "Roman Borys"
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 7,
+            "maxLength": 30,
+            "example": "+1 (555) 123-4567"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 255,
+            "example": "456 Floral Ave, Sydney NSW 2000 AU"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 1000,
+            "example": "Please deliver in the afternoon."
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 99,
+            "example": 2
+          },
+          "totalPrice": {
+            "type": "number",
+            "format": "double",
+            "minimum": 0,
+            "readOnly": true,
+            "example": 196
+          }
+        }
+      },
+      "OrderCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "bouquetId",
+          "customerName",
+          "phone",
+          "quantity"
+        ],
+        "properties": {
+          "bouquetId": {
+            "type": "integer",
+            "minimum": 1,
+            "example": 1
+          },
+          "customerName": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "example": "Roman Borys"
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 7,
+            "maxLength": 30,
+            "pattern": "^[+0-9()\\-. ]{7,30}$",
+            "example": "+1 (555) 123-4567"
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 255,
+            "example": "456 Floral Ave, Sydney NSW 2000 AU"
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 1000,
+            "example": "Please deliver in the afternoon."
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 99,
+            "example": 2
+          }
+        }
+      },
       "Error": {
         "type": "object",
         "additionalProperties": false,
@@ -628,4 +793,5 @@
     }
   }
 }
+
 

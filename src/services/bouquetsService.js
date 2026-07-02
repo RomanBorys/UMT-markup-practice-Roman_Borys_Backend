@@ -25,10 +25,20 @@ function pickFields(source, allowedFields) {
   }, {});
 }
 
-export async function findAllBouquets() {
-  return Bouquet.findAll({
+export async function findAllBouquets({
+  favorite,
+} = {}) {
+  const options = {
     order: [["id", "ASC"]],
-  });
+  };
+
+  if (typeof favorite === "boolean") {
+    options.where = {
+      favorite,
+    };
+  }
+
+  return Bouquet.findAll(options);
 }
 
 export async function findBouquetById(id) {

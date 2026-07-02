@@ -12,6 +12,7 @@ import { errorHandler } from "./middlewares/errorHandler.js";
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import bouquetsRouter from "./routes/bouquetsRouter.js";
 import feedbacksRouter from "./routes/feedbacksRouter.js";
+import ordersRouter from "./routes/ordersRouter.js";
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use(
 
 app.use("/api/bouquets", bouquetsRouter);
 app.use("/api/feedbacks", feedbacksRouter);
+app.use("/api/orders", ordersRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

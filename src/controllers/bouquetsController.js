@@ -23,8 +23,31 @@ function createPublicPhotoURL(req, fileName) {
   ).toString();
 }
 
-export async function getBouquets(_req, res) {
-  const bouquets = await findAllBouquets();
+export async function getBouquets(req, res) {
+  const favoriteQuery =
+    req.query.favorite;
+
+  let favorite;
+
+  if (favoriteQuery !== undefined) {
+    if (
+      favoriteQuery !== "true" &&
+      favoriteQuery !== "false"
+    ) {
+      throw HttpError(
+        400,
+        "favorite must be true or false",
+      );
+    }
+
+    favorite =
+      favoriteQuery === "true";
+  }
+
+  const bouquets =
+    await findAllBouquets({
+      favorite,
+    });
 
   res.status(200).json(bouquets);
 }
